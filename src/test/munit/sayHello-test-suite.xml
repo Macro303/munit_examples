@@ -13,15 +13,17 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
                 <munit:inbound-property key="http.query.params" value="#[{&quot;name&quot;:&quot;Jonah&quot;}]"/>
             </munit:inbound-properties>
         </munit:set>
-        <flow-ref name="sayHello" doc:name="sayHello"/>
     </munit:before-test>
     <munit:test name="sayHello_payloadIsHelloJonah_True" description="Calling sayHello flow sets payload to &quot;Hello Jonah&quot;" >
+        <flow-ref name="sayHello" doc:name="sayHello"/>
         <munit:assert-payload-equals message="FAILED. Expected Payload to be &quot;Hello Jonah&quot;. Found Payload to be #[payload]." expectedValue="#[&quot;Hello Jonah&quot;]" doc:name="Assert Payload: Validate Payload is &quot;Hello Jonah&quot;"/>
     </munit:test>
     <munit:test name="sayHello_payloadIsTypeString_True" description="Calling sayHello flow sets payload's datatype to Java String" >
+        <flow-ref name="sayHello" doc:name="sayHello"/>
         <munit:assert-true message="FAILED. Expected Payload type to be java.lang.String. Found Payload type to be #[payload.getClass().getName()]." condition="#[payload is java.lang.String]" doc:name="Assert True: Validate Payload is type String"/>
     </munit:test>
     <munit:test name="sayHello_fnameIsJonah_True" description="Calling sayHello sets flow variable is &quot;Jonah&quot;">
+        <flow-ref name="sayHello" doc:name="sayHello"/>
         <munit:assert-on-equals message="FAILED. Expected fname to be &quot;Jonah&quot;. Found fname to be #[flowVars.fname]." expectedValue="#[&quot;Jonah&quot;]" actualValue="#[flowVars.fname]" doc:name="Assert Equals: Validate fname is Jonah"/>
     </munit:test>
 </mule>
