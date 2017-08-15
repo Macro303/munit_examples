@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  	xmlns:mock="http://www.mulesoft.org/schema/mule/mock" 
-	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-	xmlns="http://www.mulesoft.org/schema/mule/core" 
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" 
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd">
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <munit:config name="munit" doc:name="MUnit configuration"/>
-    
     <spring:beans>
         <spring:import resource="classpath:munit-examples.xml"/>
     </spring:beans>
-    <munit:test name="sayHello_payloadReturnsHelloJonah_True" description="Calling sayHello flow sets payload to &quot;Hello Jonah&quot;">
+    <munit:test name="sayHello_payloadIsHelloJonah_True" description="Calling sayHello flow sets payload to &quot;Hello Jonah&quot;">
         <flow-ref name="sayHello" doc:name="sayHello"/>
-        <munit:assert-payload-equals message="Payload doesn't contain &quot;Hello Jonah&quot;" expectedValue="#[&quot;Hello Jonah&quot;]" doc:name="Assert Payload: Validate Payload returns &quot;Hello Jonah&quot;"/>
+        <munit:assert-payload-equals message="FAILED. Expected Payload to be &quot;Hello Jonah&quot;. Found Payload to be #[payload]." expectedValue="#[&quot;Hello Jonah&quot;]" doc:name="Assert Payload: Validate Payload is &quot;Hello Jonah&quot;"/>
+    </munit:test>
+    <munit:test name="sayHello_payloadIsTypeString_True" description="Calling sayHello flow sets payload's datatype to Java String">
+        <flow-ref name="sayHello" doc:name="sayHello"/>
+        <munit:assert-true message="FAILED. Expected Payload type to be java.lang.String. Found Payload type to be #[payload.getClass().getName()]." condition="#[payload is java.lang.String]" doc:name="Assert True: Validate Payload is type String"/>
     </munit:test>
 </mule>
