@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:order-systems.xml"/>
+        <spring:import resource="classpath:global.xml"/>
+    </spring:beans>
+    <munit:before-test name="retrieveOrders_Before-Test" description="Before tests actions">
+        <munit:set payload="#[]" doc:name="Set Message: Set Query Param &quot;timeFrame&quot;">
+            <munit:inbound-properties>
+                <munit:inbound-property key="http.query.params" value="#[{&quot;timeFrame&quot;:&quot;all&quot;}]"/>
+            </munit:inbound-properties>
+        </munit:set>
+    </munit:before-test>
+    <munit:test name="retrieveOrders_payloadIsTypeList_True" description="Calling retrieveOrders flow returns a payload of type java.util.List">
+        <mock:when messageProcessor=".*:.*" doc:name="Mock: Order service response">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Web Service Consumer']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[getResource(&quot;orderResponse.xml&quot;).asString()]" mimeType="application/xml"/>
+        </mock:when>
+        <flow-ref name="retrieveOrders" doc:name="retrieveOrders"/>
+        <munit:assert-true message="FAILED. Expected payload type to be java.util.List. Found payload type to be #[payload.getClass().getName()]." condition="#[payload is java.util.List]" doc:name="Assert True: PayloadTypeIsList"/>
+    </munit:test>
+</mule>
