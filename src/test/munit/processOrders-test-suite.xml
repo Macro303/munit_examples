@@ -6,6 +6,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
     <munit:config name="munit" doc:name="MUnit configuration"/>
     <spring:beans>
         <spring:import resource="classpath:order-systems.xml"/>
+        <spring:import resource="classpath:global.xml"/>
     </spring:beans>
     <munit:before-test name="processOrders_Before-Test" description="Before tests actions">
         <munit:set payload="#[[{'orderID':444, 'location':'worldwide','price':44.04}, {'orderID':555, 'location':'worldwide','price':55.05}, {'orderID':333, 'location':'national','price':33.03}]]" doc:name="Set Message: Payload contains International and Domestic Orders"/>
@@ -18,16 +19,22 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
         <flow-ref name="processOrders" doc:name="processOrders"/>
         <munit:assert-on-equals message="FAILED. Expected payload to contain 2 elements. Found payload to contain #[payload.size()] elements." expectedValue="#[2]" actualValue="#[payload.size()]" doc:name="Assert Equals: Payload contains Two elements"/>
     </munit:test>
-    <munit:test name="processOrders_internationalKeyContainsWorldwideOrders_True" description="Calling processOrders flow returns Worldwide orders for the International key">
+    <munit:test name="processOrders_internationalKeyOrderSizeGreaterThan0_True" description="Calling processOrders flow returns International key order size &gt; 0">
         <flow-ref name="processOrders" doc:name="processOrders"/>
         <munit:assert-true message="FAILED. Expected International key to contain more than 0 orders. Found International key to contain #[payload.'international'.size()] orders." condition="#[payload.'international'.size() &gt; 0]" doc:name="Assert True: International key contains more than 0 orders"/>
+    </munit:test>
+    <munit:test name="processOrders_internationalKeyContainsWorldwideOrders_True" description="Calling processOrders flow returns Worldwide orders for the International key">
+        <flow-ref name="processOrders" doc:name="processOrders"/>
         <foreach collection="#[payload.'international']" doc:name="For Each: Row in International key do...">
             <munit:assert-on-equals message="FAILED. Expected location to be worldwide. Found location to be #[payload.'location']." expectedValue="#[&quot;worldwide&quot;]" actualValue="#[payload.'location']" doc:name="Assert Equals: location to be worldwide"/>
         </foreach>
     </munit:test>
-    <munit:test name="processOrders_domesticKeyContainsNationalOrders_True" description="Calling processOrders flow returns National orders for the Domestic key">
+    <munit:test name="processOrders_domesticKeyOrderSizeGreaterThan0_True" description="Calling processOrders flow returns Domestic key order size &gt; 0">
         <flow-ref name="processOrders" doc:name="processOrders"/>
         <munit:assert-true message="FAILED. Expected Domestic key to contain more than 0 orders. Found Domestic key to contain #[payload.'domestic'.size()] orders." condition="#[payload.'domestic'.size() &gt; 0]" doc:name="Assert True: Domestic key contains more than 0 orders"/>
+    </munit:test>
+    <munit:test name="processOrders_domesticKeyContainsNationalOrders_True" description="Calling processOrders flow returns National orders for the Domestic key">
+        <flow-ref name="processOrders" doc:name="processOrders"/>
         <foreach collection="#[payload.'domestic']" doc:name="For Each: Row in Domestic key do...">
             <munit:assert-on-equals message="FAILED. Expected location to be national. Found location to be #[payload.'location']." expectedValue="#[&quot;national&quot;]" actualValue="#[payload.'location']" doc:name="Assert Equals: location is national"/>
         </foreach>
